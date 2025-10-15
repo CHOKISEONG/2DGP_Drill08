@@ -39,9 +39,9 @@ class AutoRun:
 
     def draw(self):
         if self.boy.face_dir == 1: # right
-            self.boy.image.clip_draw(self.boy.frame * 100, 300, 100, 100, self.boy.x, self.boy.y)
+            self.boy.image.clip_draw(self.boy.frame * 100, 300, 100, 100, self.boy.x, self.boy.y, 200, 200)
         else: # face_dir == -1: # left
-            self.boy.image.clip_draw(self.boy.frame * 100, 200, 100, 100, self.boy.x, self.boy.y)
+            self.boy.image.clip_draw(self.boy.frame * 100, 200, 100, 100, self.boy.x, self.boy.y, 200, 200)
 
 
 class Run:
@@ -121,12 +121,20 @@ class Boy:
         self.IDLE = Idle(self)
         self.SLEEP = Sleep(self)
         self.RUN = Run(self)
+        self.AUTORUN = AutoRun(self)
         self.state_machine = StateMachine(
             self.SLEEP,
             {
                 self.SLEEP: {space_down: self.IDLE},
-                self.IDLE: {time_out: self.SLEEP, right_down: self.RUN, left_down: self.RUN, right_up: self.RUN, left_up: self.RUN},
-                self.RUN: {right_up: self.IDLE, left_up: self.IDLE, right_down: self.IDLE, left_down: self.IDLE}
+                self.IDLE: {time_out: self.SLEEP, a_down: self.AUTORUN,
+                            right_down: self.RUN, left_down: self.RUN,
+                            right_up: self.RUN, left_up: self.RUN},
+
+                self.RUN: {right_up: self.IDLE, left_up: self.IDLE,
+                           right_down: self.IDLE, left_down: self.IDLE},
+
+                self.AUTORUN: {right_down: self.RUN, left_down: self.RUN,
+                               time_out: self.IDLE}
             }
         )
 
